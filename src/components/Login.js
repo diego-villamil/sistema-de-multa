@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
+const Login = ({ setUserRole }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -21,11 +21,16 @@ const Login = () => {
       });
 
       if (response.data.status === 'success') {
-        const { rol } = response.data;
+        const { rol, id } = response.data;  // Obtener rol e id del usuario
         console.log("Rol del usuario:", rol);
-        localStorage.setItem('userRole', rol);  // Guardar el rol en localStorage
+        console.log("ID del usuario:", id);
+
+        // Guardar el rol e id del usuario en localStorage
+        localStorage.setItem('userRole', rol);
+        localStorage.setItem('userId', id);  // Almacenar el id del usuario
+        setUserRole(rol);  // Actualizar el estado en AppRoutes
         
-        // Redirigir según el rol del usuario
+        // Redireccionar según el rol
         if (rol === 'admin') {
           navigate('/admin');
         } else if (rol === 'moderador') {

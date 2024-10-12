@@ -1,5 +1,5 @@
 import React from 'react';
-import BarraLateral from './BarraLateral'; // Importar el componente BarraLateral
+import BarraLateral from './BarraLateral';
 
 const Admin = () => {
   const adminOptions = [
@@ -7,22 +7,19 @@ const Admin = () => {
     { name: 'Ver Cámaras Registradas', icon: '🎥' },
     { name: 'Ver Grabaciones Capturadas', icon: '📹' },
     { name: 'Registro de Vehículos Detectados', icon: '🚗' },
-    { name: 'Gestionar Roles de Usuarios', icon: '👥' }, // Solo disponible para administrador
+    { name: 'Gestionar Roles de Usuarios', icon: '👥' },
   ];
 
   return (
     <div className="flex min-h-screen">
-      {/* Barra Lateral */}
       <BarraLateral 
         role="Administrador"
         options={adminOptions}
-        userName="Nombre del Usuario"
-        userEmail="admin@example.com"
       />
-
-      {/* Área Principal - Cards */}
+      
       <main className="flex-1 bg-gray-100 p-8">
         <h1 className="text-3xl font-bold mb-8">Panel de Administrador</h1>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {adminOptions.map((option) => (
             <div
