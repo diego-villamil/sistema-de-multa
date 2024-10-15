@@ -4,9 +4,26 @@ import { useNavigate } from 'react-router-dom';
 const LogoutButton = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.clear();  // Limpia todo el localStorage
-    navigate('/login');  // Redirige al login
+  const handleLogout = async () => {
+    try {
+      // Petición al servidor para cerrar sesión
+      const response = await fetch('http://localhost:5000/api/logout', {
+        method: 'POST',
+        credentials: 'include',  // Enviar cookies de sesión
+      });
+
+      if (response.ok) {
+        console.log("Logout exitoso");
+      } else {
+        console.error("Error en el logout");
+      }
+    } catch (error) {
+      console.error('Error al cerrar sesión en el servidor:', error);
+    }
+
+    // Limpiar el localStorage
+    localStorage.clear();
+    navigate('/login');  // Redirigir al login
   };
 
   return (

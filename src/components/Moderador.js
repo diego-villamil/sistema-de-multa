@@ -1,5 +1,5 @@
 import React from 'react';
-import BarraLateral from './BarraLateral';
+
 
 const Moderador = () => {
   const moderadorOptions = [
@@ -9,10 +9,6 @@ const Moderador = () => {
 
   return (
     <div className="flex min-h-screen">
-      <BarraLateral 
-        role="Moderador"
-        options={moderadorOptions}
-      />
 
       <main className="flex-1 bg-gray-100 p-8">
         <h1 className="text-3xl font-bold mb-8">Panel de Moderador</h1>

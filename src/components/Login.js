@@ -1,52 +1,39 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const Login = ({ setUserRole }) => {
+function Login({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+
     try {
-      const response = await axios.post('http://localhost:5000/api/login', {
-        email: email,
-        password: password,
-      }, {
+      const response = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        body: JSON.stringify({ email, password }),
       });
 
-      if (response.data.status === 'success') {
-        const { rol, id } = response.data;  // Obtener rol e id del usuario
-        console.log("Rol del usuario:", rol);
-        console.log("ID del usuario:", id);
+      const data = await response.json();
 
-        // Guardar el rol e id del usuario en localStorage
-        localStorage.setItem('userRole', rol);
-        localStorage.setItem('userId', id);  // Almacenar el id del usuario
-        setUserRole(rol);  // Actualizar el estado en AppRoutes
-        
-        // Redireccionar según el rol
-        if (rol === 'admin') {
-          navigate('/admin');
-        } else if (rol === 'moderador') {
-          navigate('/moderador');
-        } else {
-          setError('Rol no reconocido');
-        }
+      if (response.ok) {
+        // Si el login es exitoso, llama a onLogin
+        onLogin(data.token, data.id);  // Pasa el token y userId al componente padre
+
+        // Redirige a la interfaz según el rol del usuario
+        navigate('/interfaz');
       } else {
-        setError('Email o contraseña incorrectos');
+        setError(data.message || 'Error en el inicio de sesión');
       }
     } catch (error) {
-      if (error.response) {
-        setError(error.response.data.message);
-      } else {
-        setError('Error en el servidor');
-      }
+      console.error('Error:', error);
+      setError('Error en el servidor. Por favor, intenta más tarde.');
     }
   };
 
@@ -55,7 +42,7 @@ const Login = ({ setUserRole }) => {
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm">
         <h2 className="text-2xl font-bold text-center mb-6">Iniciar Sesión</h2>
         {error && <p className="text-red-500 mb-4">{error}</p>}
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Correo Electrónico
@@ -94,6 +81,6 @@ const Login = ({ setUserRole }) => {
       </div>
     </div>
   );
-};
+}
 
 export default Login;

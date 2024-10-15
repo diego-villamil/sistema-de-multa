@@ -1,39 +1,43 @@
-import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Login from './components/Login';
-import Admin from './components/Admin';
-import Moderador from './components/Moderador';
+import Interfaz from './components/Interfaz';
+import { useState } from 'react';
 
-const AppRoutes = () => {
-  const [userRole, setUserRole] = useState(localStorage.getItem('userRole'));
+function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
 
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setUserRole(localStorage.getItem('userRole'));
-    };
+  const onLogin = (token, userId) => {
+    // Establece el estado de autenticación cuando el usuario se loguea
+    localStorage.setItem('token', token);
+    localStorage.setItem('userId', userId);
+    setIsAuthenticated(true);
+  };
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+  const onLogout = () => {
+    // Elimina los datos de autenticación cuando el usuario cierra sesión
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    setIsAuthenticated(false);
+  };
 
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<Login setUserRole={setUserRole} />} />
-        
+        {/* Redirige al login si ya está autenticado */}
         <Route 
-          path="/admin" 
-          element={userRole === 'admin' ? <Admin /> : <Navigate to="/login" />} 
+          path="/login" 
+          element={isAuthenticated ? <Navigate to="/interfaz" /> : <Login onLogin={onLogin} />} 
         />
+        {/* Protege la ruta para la interfaz */}
         <Route 
-          path="/moderador" 
-          element={userRole === 'moderador' ? <Moderador /> : <Navigate to="/login" />} 
+          path="/interfaz/*" 
+          element={isAuthenticated ? <Interfaz onLogout={onLogout} /> : <Navigate to="/login" />} 
         />
-        
-        <Route path="*" element={<Navigate to="/login" />} />
+        {/* Redirige automáticamente al login si no estás autenticado */}
+        <Route path="/" element={<Navigate to={isAuthenticated ? "/interfaz" : "/login"} />} />
       </Routes>
     </Router>
   );
-};
+}
 
-export default AppRoutes;
+export default App;
